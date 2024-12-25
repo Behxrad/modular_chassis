@@ -16,19 +16,21 @@ type UserRequest struct {
 }
 
 type TestRequest struct {
+	services.BaseReq
 	Input string `json:"input" binding:"required"`
 }
 
 type TestResponse struct {
+	services.BaseResp
 	Output string `json:"output" binding:"required"`
 }
 
 type (
 	Service interface {
-		Test(ctx context.Context, request services.ServiceRequest[TestRequest]) (services.ServiceResponse[TestResponse], error)
-		FetchUserID(ctx context.Context, request services.ServiceRequest[UserRequest]) (services.ServiceResponse[UserResponse], error)
+		Test(ctx context.Context, request TestRequest) (TestResponse, error)
+		FetchUserID(ctx context.Context, request UserRequest) (UserResponse, error)
 	}
 	Service2 interface {
-		Test(ctx context.Context, request services.ServiceRequest[TestRequest]) (services.ServiceResponse[TestResponse], error)
+		Test(ctx context.Context, request TestRequest) (TestResponse, error)
 	}
 )

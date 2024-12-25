@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"modular_chassis/echo/pkg/services"
 	"modular_chassis/echo/pkg/services/carpay"
 	mediatorAPIs "modular_chassis/mediator/pkg/api"
 	"sync"
@@ -29,12 +29,12 @@ func init() {
 	mediatorAPIs.GetMediatorAPI().RegisterServiceFunc(getService())
 }
 
-func (impls) ListVehicles(ctx context.Context, req services.ServiceRequest[carpay.ListVehiclesRequest]) (services.ServiceResponse[carpay.ListVehiclesResponse], error) {
+func (impls) ListVehicles(ctx context.Context, req carpay.ListVehiclesRequest) (carpay.ListVehiclesResponse, error) {
 	fmt.Println(">>> ListVehicles called")
-	return services.ServiceResponse[carpay.ListVehiclesResponse]{}, nil
+	return carpay.ListVehiclesResponse{Vehicles: make([]carpay.Vehicle, 0)}, errors.New("sample error")
 }
 
-func (impls) Test(ctx context.Context, request services.ServiceRequest[carpay.TestRequest]) (services.ServiceResponse[carpay.TestResponse], error) {
+func (impls) Test(ctx context.Context, request carpay.TestRequest) (carpay.TestResponse, error) {
 	fmt.Println(">>> Test called")
-	return services.ServiceResponse[carpay.TestResponse]{}, nil
+	return carpay.TestResponse{}, nil
 }

@@ -80,6 +80,7 @@ func (r *registry) identifyImplementedServiceInterface(implMethods map[string]me
 	var candidate, firstKey string
 	for k := range implMethods {
 		firstKey = k
+		break
 	}
 	interfaces := r.servicesMethodsInterfaces[firstKey]
 	for _, interfaze := range interfaces {
@@ -129,8 +130,8 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]metho
 		funcDefs[fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","),
 			strings.Join(results, ","))] = methodInfo{
 			function: v.Method(i),
-			request:  t.Method(i).Func.Type().In(2).Field(0).Type,
-			response: t.Method(i).Func.Type().Out(0).Field(0).Type,
+			request:  t.Method(i).Func.Type().In(2),
+			response: t.Method(i).Func.Type().Out(0),
 		}
 	}
 	return funcDefs
@@ -178,15 +179,11 @@ func (r *registry) identifyServiceInterfaces(file *ast.File) {
 							var param, result string
 
 							if len(decl.Params.List) > 1 {
-								reqt := decl.Params.List[1].Type.(*ast.IndexExpr).X.(*ast.SelectorExpr).Sel.Name
-								reqtp := decl.Params.List[1].Type.(*ast.IndexExpr).Index.(*ast.Ident).Name
-								param = fmt.Sprintf("%s[%s.%s]", reqt, packageName, reqtp)
+								param = decl.Params.List[1].Type.(*ast.Ident).Name
 							}
 
 							if len(decl.Results.List) != 0 {
-								rest := decl.Results.List[0].Type.(*ast.IndexExpr).X.(*ast.SelectorExpr).Sel.Name
-								restp := decl.Results.List[0].Type.(*ast.IndexExpr).Index.(*ast.Ident).Name
-								result = fmt.Sprintf("%s[%s.%s]", rest, packageName, restp)
+								result = decl.Results.List[0].Type.(*ast.Ident).Name
 							}
 
 							funcDef := fmt.Sprintf("%s(%s,%s)(%s,%s)", methodName, "Context", param, result, "error")

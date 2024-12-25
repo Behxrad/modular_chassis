@@ -2,11 +2,10 @@ package carpay
 
 import (
 	"context"
-	"modular_chassis/echo/pkg/services"
 )
 
 type ListVehiclesRequest struct {
-	Mobile string `json:"username" binding:"required,min=5,max=20" swaggo:"required,min=5,max=20"`
+	Mobile string `json:"mobile" binding:"required,min=5,max=20" swaggo:"required,min=5,max=20"`
 }
 
 type ListVehiclesResponse struct {
@@ -27,11 +26,11 @@ type TestResponse struct {
 
 type (
 	Service3 interface {
-		Test(ctx context.Context, request services.ServiceRequest[TestRequest]) (services.ServiceResponse[TestResponse], error)
-		BuyVehicle(ctx context.Context, request services.ServiceRequest[TestRequest]) (services.ServiceResponse[TestResponse], error)
+		Test(ctx context.Context, request TestRequest) (TestResponse, error)
+		BuyVehicle(ctx context.Context, request TestRequest) (TestResponse, error)
 	}
 	Service4 interface {
-		ListVehicles(ctx context.Context, req services.ServiceRequest[ListVehiclesRequest]) (services.ServiceResponse[ListVehiclesResponse], error)
-		Test(ctx context.Context, request services.ServiceRequest[TestRequest]) (services.ServiceResponse[TestResponse], error)
+		ListVehicles(ctx context.Context, request ListVehiclesRequest) (ListVehiclesResponse, error)
+		Test(ctx context.Context, request TestRequest) (TestResponse, error)
 	}
 )

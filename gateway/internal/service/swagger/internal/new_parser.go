@@ -141,12 +141,24 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 	router := "// @Router /api/%s/%s [POST]"
 
 	if len(decl.Params.List) > 1 {
-		t := decl.Params.List[1].Type.(*ast.IndexExpr).Index.(*ast.Ident).Name
+		t := decl.Params.List[1].Type.(*ast.Ident).Name
+		for i, field := range decl.Params.List[1].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).Fields.List {
+			if field.Names == nil {
+				decl.Params.List[1].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).
+					Fields.List[i].Tag = &ast.BasicLit{Value: `swaggerignore:"true"`}
+			}
+		}
 		param = fmt.Sprintf(param, t, packageName, t)
 	}
 
 	if len(decl.Results.List) != 0 {
-		t := decl.Results.List[0].Type.(*ast.IndexExpr).Index.(*ast.Ident).Name
+		t := decl.Results.List[0].Type.(*ast.Ident).Name
+		for i, field := range decl.Results.List[0].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).Fields.List {
+			if field.Names == nil {
+				decl.Results.List[0].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).
+					Fields.List[i].Tag = &ast.BasicLit{Value: `swaggerignore:"true"`}
+			}
+		}
 		result = fmt.Sprintf(result, packageName, t)
 	}
 

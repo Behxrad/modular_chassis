@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"modular_chassis/echo/pkg/services"
 	"modular_chassis/mediator/internal/service"
 	"sync"
 )
@@ -24,10 +23,10 @@ func GetMediatorAPI() *mediatorAPI {
 	return mediatorAPIIns
 }
 
-func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, request services.ServiceRequest[string]) (services.ServiceResponse[string], error) {
+func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, request string) (string, error) {
 	response, err := service.GetRouter().HandleRequest(ctx, serviceType, method, request)
 	if err != nil {
-		return services.ServiceResponse[string]{}, err
+		return "", err
 	}
 	return response, nil
 }

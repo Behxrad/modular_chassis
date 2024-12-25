@@ -1,9 +1,9 @@
 package services
 
-type ServiceRequest[P any] struct {
-	Payload P
+type BaseReq struct {
+	mobile string
 }
 
-type ServiceResponse[P any] struct {
-	Payload P
+type BaseResp struct {
+	code int64
 }
