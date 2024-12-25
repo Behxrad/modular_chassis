@@ -25,7 +25,7 @@ func GetMediatorAPI() *mediatorAPI {
 }
 
 func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, request services.ServiceRequest[string]) (services.ServiceResponse[string], error) {
-	response, err := service.HandleRequest(ctx, serviceType, method, request)
+	response, err := service.GetRouter().HandleRequest(ctx, serviceType, method, request)
 	if err != nil {
 		return services.ServiceResponse[string]{}, err
 	}

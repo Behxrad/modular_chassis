@@ -23,8 +23,14 @@ var (
 	registryIns *registry
 )
 
+type methodInfo struct {
+	function reflect.Value
+	request  reflect.Type
+	response reflect.Type
+}
+
 type registry struct {
-	serviceMethods map[string]reflect.Value
+	serviceMethods map[string]methodInfo
 
 	servicesInterfaceMethods  map[string][]string
 	servicesMethodsInterfaces map[string][]string
@@ -41,7 +47,7 @@ func GetRegistry() *registry {
 	once.Do(func() {
 		if registryIns == nil {
 			registryIns = &registry{
-				serviceMethods: make(map[string]reflect.Value),
+				serviceMethods: make(map[string]methodInfo),
 
 				servicesInterfaceMethods:  make(map[string][]string),
 				servicesMethodsInterfaces: make(map[string][]string),
@@ -49,6 +55,10 @@ func GetRegistry() *registry {
 		}
 	})
 	return registryIns
+}
+
+func (r *registry) GetService(domain, method string) methodInfo {
+	return r.serviceMethods[fmt.Sprintf("%s.%s", domain, method)]
 }
 
 func (r *registry) RegisterService(serviceImpl interface{}) {
@@ -66,7 +76,7 @@ func (r *registry) RegisterService(serviceImpl interface{}) {
 	}
 }
 
-func (r *registry) identifyImplementedServiceInterface(implMethods map[string]reflect.Value) string {
+func (r *registry) identifyImplementedServiceInterface(implMethods map[string]methodInfo) string {
 	var candidate, firstKey string
 	for k := range implMethods {
 		firstKey = k
@@ -91,8 +101,8 @@ func (r *registry) identifyImplementedServiceInterface(implMethods map[string]re
 	return candidate
 }
 
-func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]reflect.Value {
-	funcDefs := make(map[string]reflect.Value)
+func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]methodInfo {
+	funcDefs := make(map[string]methodInfo)
 	t := reflect.TypeOf(serviceImpl)
 	v := reflect.ValueOf(serviceImpl)
 	for i := 0; i < t.NumMethod(); i++ {
@@ -116,7 +126,12 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]refle
 			}
 			results = append(results, string(find))
 		}
-		funcDefs[fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","), strings.Join(results, ","))] = v.Method(i)
+		funcDefs[fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","),
+			strings.Join(results, ","))] = methodInfo{
+			function: v.Method(i),
+			request:  t.Method(i).Func.Type().In(2).Field(0).Type,
+			response: t.Method(i).Func.Type().Out(0).Field(0).Type,
+		}
 	}
 	return funcDefs
 }
