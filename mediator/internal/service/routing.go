@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"reflect"
 )
 
@@ -21,14 +22,17 @@ func GetRouter() *router {
 
 func (r *router) HandleRequest(ctx context.Context, serviceType, method string, request string) (string, error) {
 	mInfo := GetRegistry().GetService(serviceType, method)
+	if !mInfo.function.IsValid() {
+		return "", errors.New("service not found")
+	}
 
-	req := reflect.New(mInfo.request).Elem()
-	err := json.Unmarshal([]byte(request), &req)
+	req := reflect.New(mInfo.request).Interface()
+	err := json.Unmarshal([]byte(request), req)
 	if err != nil {
 		return "", err
 	}
 
-	reflectVals := mInfo.function.Call([]reflect.Value{reflect.ValueOf(ctx), req})
+	reflectVals := mInfo.function.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(req).Elem()})
 	res, errs := reflectVals[0].Interface(), reflectVals[1].Interface()
 	if errs != nil {
 		return "", errs.(error)

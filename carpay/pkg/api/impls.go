@@ -2,8 +2,6 @@ package api
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"modular_chassis/echo/pkg/services/carpay"
 	mediatorAPIs "modular_chassis/mediator/pkg/api"
 	"sync"
@@ -30,11 +28,9 @@ func init() {
 }
 
 func (impls) ListVehicles(ctx context.Context, req carpay.ListVehiclesRequest) (carpay.ListVehiclesResponse, error) {
-	fmt.Println(">>> ListVehicles called")
-	return carpay.ListVehiclesResponse{Vehicles: make([]carpay.Vehicle, 0)}, errors.New("sample error")
+	return carpay.ListVehiclesResponse{Vehicles: []carpay.Vehicle{{"86768"}, {"68778798"}}}, nil
 }
 
 func (impls) Test(ctx context.Context, request carpay.TestRequest) (carpay.TestResponse, error) {
-	fmt.Println(">>> Test called")
-	return carpay.TestResponse{}, nil
+	return carpay.TestResponse{Output: request.Input}, nil
 }
