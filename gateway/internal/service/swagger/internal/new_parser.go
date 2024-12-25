@@ -133,7 +133,7 @@ func (parser *Parser) ParseRouterAPIInfoV2(fileInfo *AstFileInfo) error {
 }
 
 func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncType, file *AstFileInfo) *ast.CommentGroup {
-	packageName := file.File.Name.Name
+	packageName := toSnakeCase(file.File.Name.Name)
 	method := toSnakeCase(name)
 
 	param := "// @Param %s body %s.%s true \"Request body\""

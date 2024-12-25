@@ -4,16 +4,34 @@ import (
 	"context"
 	"modular_chassis/echo/pkg/services"
 	"modular_chassis/mediator/internal/service"
+	"sync"
 )
 
-func Route[P, R any](ctx context.Context, serviceType, method string, request services.ServiceRequest[P]) (services.ServiceResponse[R], error) {
-	response, err := service.HandleRequest[P, R](ctx, serviceType, method, request)
+var (
+	once           sync.Once
+	mediatorAPIIns *mediatorAPI
+)
+
+type mediatorAPI struct {
+}
+
+func GetMediatorAPI() *mediatorAPI {
+	once.Do(func() {
+		if mediatorAPIIns == nil {
+			mediatorAPIIns = &mediatorAPI{}
+		}
+	})
+	return mediatorAPIIns
+}
+
+func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, request services.ServiceRequest[string]) (services.ServiceResponse[string], error) {
+	response, err := service.HandleRequest(ctx, serviceType, method, request)
 	if err != nil {
-		return services.ServiceResponse[R]{}, err
+		return services.ServiceResponse[string]{}, err
 	}
 	return response, nil
 }
 
-func RegisterServiceFunc(serviceImpl interface{}) {
+func (m *mediatorAPI) RegisterServiceFunc(serviceImpl interface{}) {
 	service.GetRegistry().RegisterService(serviceImpl)
 }

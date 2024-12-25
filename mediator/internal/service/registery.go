@@ -6,11 +6,16 @@ import (
 	goparser "go/parser"
 	"go/token"
 	"modular_chassis/echo/pkg"
+	"modular_chassis/echo/pkg/utils/string_utils"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"strings"
 	"sync"
+)
+
+const (
+	servicesDefinitionRoot = "services"
 )
 
 var (
@@ -19,19 +24,24 @@ var (
 )
 
 type registry struct {
-	services     map[string]interface{}
-	serviceFuncs map[string]interface{}
+	serviceMethods map[string]reflect.Value
 
 	servicesInterfaceMethods  map[string][]string
 	servicesMethodsInterfaces map[string][]string
+}
+
+func init() {
+	err := GetRegistry().identifyServiceDefinitions(servicesDefinitionRoot)
+	if err != nil {
+		return
+	}
 }
 
 func GetRegistry() *registry {
 	once.Do(func() {
 		if registryIns == nil {
 			registryIns = &registry{
-				services:     make(map[string]interface{}),
-				serviceFuncs: make(map[string]interface{}),
+				serviceMethods: make(map[string]reflect.Value),
 
 				servicesInterfaceMethods:  make(map[string][]string),
 				servicesMethodsInterfaces: make(map[string][]string),
@@ -42,24 +52,34 @@ func GetRegistry() *registry {
 }
 
 func (r *registry) RegisterService(serviceImpl interface{}) {
-	r.identifyServiceDefinitions("services")
-	c := r.hasImplementedAnyDefinition(serviceImpl)
-	fmt.Println(c)
-	r.services["test"] = serviceImpl
+	implMethods := r.extractImplFuncDefs(serviceImpl)
+	interfaceName := r.identifyImplementedServiceInterface(implMethods)
+	if interfaceName == "" {
+		return
+	}
+
+	afterMethodNameCompile := regexp.MustCompile("\\(.*\\)")
+	for signature, value := range implMethods {
+		d := strings.Split(interfaceName, ".")[0]
+		m := string_utils.ToSnakeCase(string(afterMethodNameCompile.ReplaceAll([]byte(signature), []byte{})))
+		r.serviceMethods[fmt.Sprintf("%s.%s", d, m)] = value
+	}
 }
 
-func (r *registry) hasImplementedAnyDefinition(serviceImpl interface{}) string {
-	defs := r.extractImplFuncDefs(serviceImpl)
-	interfaces := r.servicesMethodsInterfaces[defs[1]]
-	candidate := ""
+func (r *registry) identifyImplementedServiceInterface(implMethods map[string]reflect.Value) string {
+	var candidate, firstKey string
+	for k := range implMethods {
+		firstKey = k
+	}
+	interfaces := r.servicesMethodsInterfaces[firstKey]
 	for _, interfaze := range interfaces {
-		if len(r.servicesInterfaceMethods[interfaze]) == len(defs) {
+		if len(r.servicesInterfaceMethods[interfaze]) == len(implMethods) {
 			found := 0
-			for _, method := range r.servicesInterfaceMethods[interfaze] {
-				for _, def := range defs {
-					if method == def {
+			for _, interfaceMethod := range r.servicesInterfaceMethods[interfaze] {
+				for implMethod := range implMethods {
+					if interfaceMethod == implMethod {
 						found++
-						if found == len(defs) {
+						if found == len(implMethods) {
 							return interfaze
 						}
 						break
@@ -71,9 +91,10 @@ func (r *registry) hasImplementedAnyDefinition(serviceImpl interface{}) string {
 	return candidate
 }
 
-func (r *registry) extractImplFuncDefs(serviceImpl interface{}) []string {
-	funcDefs := make([]string, 0)
+func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]reflect.Value {
+	funcDefs := make(map[string]reflect.Value)
 	t := reflect.TypeOf(serviceImpl)
+	v := reflect.ValueOf(serviceImpl)
 	for i := 0; i < t.NumMethod(); i++ {
 		method := t.Method(i)
 		paramCompile := regexp.MustCompile("(^[A-Za-z0-9]+$)|(^[A-Za-z0-9]+\\[.*]$)")
@@ -95,7 +116,7 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) []string {
 			}
 			results = append(results, string(find))
 		}
-		funcDefs = append(funcDefs, fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","), strings.Join(results, ",")))
+		funcDefs[fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","), strings.Join(results, ","))] = v.Method(i)
 	}
 	return funcDefs
 }

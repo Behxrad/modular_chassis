@@ -26,6 +26,7 @@ func (h httpServer) Run() error {
 
 	app.Get("/swagger/doc.json", swaggerJSONDoc)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
+	app.Post("/api/:domain/:service", generalAPI)
 
 	err := app.Listen(":1323")
 	if err != nil {

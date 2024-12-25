@@ -26,7 +26,7 @@ func getService() *impls {
 }
 
 func init() {
-	mediatorAPIs.RegisterServiceFunc(getService())
+	mediatorAPIs.GetMediatorAPI().RegisterServiceFunc(getService())
 }
 
 func (impls) ListVehicles(ctx context.Context, req services.ServiceRequest[carpay.ListVehiclesRequest]) (services.ServiceResponse[carpay.ListVehiclesResponse], error) {
