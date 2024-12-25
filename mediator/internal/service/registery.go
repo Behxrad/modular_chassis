@@ -101,7 +101,7 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]refle
 		genericArgCompile := regexp.MustCompile("\\w+\\.\\w+")
 		replaceGenericArgCompile := regexp.MustCompile("\\[.*]")
 		var params, results []string
-		for i := 1; i < t.Method(0).Func.Type().NumIn(); i++ {
+		for i := 1; i < method.Func.Type().NumIn(); i++ {
 			find := paramCompile.Find([]byte(method.Func.Type().In(i).Name()))
 			if find2 := genericArgCompile.Find([]byte(method.Func.Type().In(i).Name())); find2 != nil {
 				find = replaceGenericArgCompile.ReplaceAll(find, []byte(fmt.Sprintf("[%s]", find2)))
@@ -109,7 +109,7 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]refle
 			params = append(params, string(find))
 		}
 
-		for i := 0; i < t.Method(0).Func.Type().NumOut(); i++ {
+		for i := 0; i < method.Func.Type().NumOut(); i++ {
 			find := paramCompile.Find([]byte(method.Func.Type().Out(i).Name()))
 			if find2 := genericArgCompile.Find([]byte(method.Func.Type().Out(i).Name())); find2 != nil {
 				find = replaceGenericArgCompile.ReplaceAll(find, []byte(fmt.Sprintf("[%s]", find2)))
