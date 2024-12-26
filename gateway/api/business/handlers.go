@@ -1,4 +1,4 @@
-package services
+package business
 
 import (
 	"github.com/gofiber/fiber/v2"

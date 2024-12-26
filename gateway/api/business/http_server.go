@@ -1,4 +1,4 @@
-package services
+package business
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -23,6 +23,8 @@ func GetHTTPServer() *httpServer {
 
 func (h httpServer) Run() error {
 	app := fiber.New()
+
+	app.Use(panicInterceptor)
 
 	app.Get("/swagger/doc.json", swaggerJSONDoc)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)

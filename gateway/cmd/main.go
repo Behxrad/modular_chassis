@@ -2,13 +2,13 @@ package main
 
 import (
 	"log"
-	"modular_chassis/gateway/api/services"
+	"modular_chassis/gateway/api/business"
 
 	_ "modular_chassis/carpay/pkg/api"
 )
 
 func main() {
-	err := services.GetHTTPServer().Run()
+	err := business.GetHTTPServer().Run()
 	if err != nil {
 		log.Fatal(err)
 	}
