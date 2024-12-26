@@ -6,13 +6,13 @@ import (
 )
 
 type UserResponse struct {
-	Username string `json:"username" binding:"required,min=5,max=20" swaggo:"required,min=5,max=20"`
-	Email    string `json:"email" binding:"required,email" swaggo:"required,email"`
-	Age      int    `json:"age" binding:"gte=18" swaggo:"minimum=18"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email" binding:"required,email"`
+	Age      int    `json:"age" binding:"gte=18"`
 }
 
 type UserRequest struct {
-	ID int `json:"id" binding:"required"`
+	ID int `json:"id" binding:"required,min=5,max=20"`
 }
 
 type TestRequest struct {

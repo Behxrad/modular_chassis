@@ -4,10 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"github.com/go-playground/validator/v10"
 	"reflect"
 )
 
 var routerIns *router
+var validate = validator.New(validator.WithRequiredStructEnabled())
 
 type router struct{}
 
@@ -32,6 +35,11 @@ func (r *router) HandleRequest(ctx context.Context, serviceType, method string, 
 		return "", err
 	}
 
+	err = r.validateRequest(req)
+	if err != nil {
+		return "", err
+	}
+
 	reflectVals := mInfo.function.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(req).Elem()})
 	res, errs := reflectVals[0].Interface(), reflectVals[1].Interface()
 	if errs != nil {
@@ -43,4 +51,14 @@ func (r *router) HandleRequest(ctx context.Context, serviceType, method string, 
 		return "", err
 	}
 	return string(marshal), nil
+}
+
+func (r *router) validateRequest(request any) error {
+	err := validate.Struct(request)
+	if err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		fmt.Println(validationErrors)
+		return err
+	}
+	return nil
 }

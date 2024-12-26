@@ -5,11 +5,11 @@ import (
 )
 
 type ListVehiclesRequest struct {
-	Mobile string `json:"mobile" binding:"required,min=5,max=20" swaggo:"required,min=5,max=20"`
+	UserID int64 `json:"userID" validate:"required,min=5,max=5"`
 }
 
 type ListVehiclesResponse struct {
-	Vehicles []Vehicle `json:"vehicles" swaggo:"required"`
+	Vehicles []Vehicle `json:"vehicles"`
 }
 
 type Vehicle struct {
