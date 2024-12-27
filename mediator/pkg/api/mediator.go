@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"modular_chassis/mediator/internal/service"
 	"reflect"
 	"sync"
@@ -33,25 +32,8 @@ func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, req
 	return response, nil
 }
 
-func (m *mediatorAPI) JSONRoute(ctx context.Context, serviceType, method string, raw string) (string, error) {
-	reqModel, _ := service.GetRegistry().GetServiceModels(serviceType, method)
-
-	request := reflect.New(reqModel).Interface()
-	err := json.Unmarshal([]byte(raw), request)
-	if err != nil {
-		return "", err
-	}
-
-	response, err := service.GetRouter().HandleRequest(ctx, serviceType, method, request)
-	if err != nil {
-		return "", err
-	}
-
-	marshal, err := json.Marshal(response)
-	if err != nil {
-		return "", err
-	}
-	return string(marshal), nil
+func (m *mediatorAPI) GetServiceModels(serviceType, method string) (request, response reflect.Type) {
+	return service.GetRegistry().GetServiceModels(serviceType, method)
 }
 
 func (m *mediatorAPI) RegisterServiceFunc(serviceImpl interface{}) {
