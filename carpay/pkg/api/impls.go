@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"modular_chassis/echo/pkg/errs"
 	"modular_chassis/echo/pkg/services/carpay"
 	mediatorAPIs "modular_chassis/mediator/pkg/api"
 	"sync"
@@ -32,5 +33,5 @@ func (impls) ListVehicles(ctx context.Context, req carpay.ListVehiclesRequest) (
 }
 
 func (impls) Test(ctx context.Context, request carpay.TestRequest) (carpay.TestResponse, error) {
-	return carpay.TestResponse{Output: request.Input}, nil
+	return carpay.TestResponse{Output: request.Input}, errs.NewServiceErrorCode(carpay.VehicleNotSupported)
 }

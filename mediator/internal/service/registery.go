@@ -154,6 +154,9 @@ func (r *registry) identifyServiceDefinitions(dirName string) error {
 				return err
 			}
 		} else {
+			if file.Name() != "definition.go" {
+				continue
+			}
 			data, err := pkg.EmbeddedFiles.ReadFile(filepath.Join(dirName, file.Name()))
 			if err != nil {
 				return err

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"modular_chassis/echo/pkg/errs"
 	"modular_chassis/echo/pkg/services/authentication"
 	mediatorAPIs "modular_chassis/mediator/pkg/api"
 	"sync"
@@ -28,7 +29,7 @@ func init() {
 }
 
 func (i *impls) Test(ctx context.Context, request authentication.TestRequest) (authentication.TestResponse, error) {
-	return authentication.TestResponse{}, nil
+	return authentication.TestResponse{}, errs.NewServiceErrorCode(authentication.UserNotFound)
 }
 func (i *impls) FetchUserID(ctx context.Context, request authentication.UserRequest) (authentication.UserResponse, error) {
 	return authentication.UserResponse{}, nil

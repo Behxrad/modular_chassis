@@ -1,8 +1,8 @@
 package authentication
 
-import "modular_chassis/echo/pkg/errorz"
+import "modular_chassis/echo/pkg/errs"
 
 var (
-	Unauthorized errorz.Type = 10001
-	UserNotFound errorz.Type = 10002
+	Unauthorized errs.ResponseCode = 40002
+	UserNotFound errs.ResponseCode = 40003
 )

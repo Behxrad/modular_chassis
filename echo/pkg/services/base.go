@@ -1,9 +1,10 @@
 package services
 
 type BaseReq struct {
-	Mobile string
+	Mobile string `json:"mobile"`
 }
 
 type BaseResp struct {
-	Code int64
+	Code    int32  `json:"code"`
+	Message string `json:"message"`
 }

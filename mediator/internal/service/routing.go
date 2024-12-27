@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"modular_chassis/echo/pkg/errs"
 	"reflect"
 )
 
@@ -30,7 +31,7 @@ func (r *router) HandleRequest(ctx context.Context, serviceType, method string, 
 
 	err := r.validateRequest(request)
 	if err != nil {
-		return "", err
+		return "", errs.NewServiceErrorCodeAndCause(errs.BadRequest, err)
 	}
 
 	reflectVals := mInfo.Function.Call([]reflect.Value{reflect.ValueOf(ctx), reflect.ValueOf(request).Elem()})

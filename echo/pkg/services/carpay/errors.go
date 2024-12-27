@@ -1,8 +1,8 @@
 package carpay
 
-import "modular_chassis/echo/pkg/errorz"
+import "modular_chassis/echo/pkg/errs"
 
 var (
-	VehicleNotSupported errorz.Type = 10020
-	InvalidPlateNumber  errorz.Type = 10021
+	VehicleNotSupported errs.ResponseCode = 40011
+	InvalidPlateNumber  errs.ResponseCode = 40012
 )

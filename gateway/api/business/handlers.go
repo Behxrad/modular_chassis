@@ -26,8 +26,7 @@ var generalAPI = func(c *fiber.Ctx) error {
 	request := api.GetMediatorAPI().GetServiceRequestModel(domain, service)
 	baseReq := api.GetMediatorAPI().GetBaseReqFromModel(request)
 	if baseReq != nil {
-		//Can change baseReq here
-		baseReq.Mobile = "Mobile Number here"
+		baseReq.Mobile = "09##***####" //TODO: make authentication here to fill headers
 	}
 
 	err := json.Unmarshal(c.Body(), request)
@@ -40,11 +39,5 @@ var generalAPI = func(c *fiber.Ctx) error {
 		return err
 	}
 
-	marshal, err := json.Marshal(response)
-	if err != nil {
-		return err
-	}
-
-	c.Set("Content-Type", "application/json")
-	return c.SendString(string(marshal))
+	return c.JSON(response)
 }

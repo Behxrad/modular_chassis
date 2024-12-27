@@ -6,14 +6,16 @@ import (
 	"sync"
 )
 
-var once sync.Once
-var httpServerIns *httpServer
+var (
+	httpServerOnce sync.Once
+	httpServerIns  *httpServer
+)
 
 type httpServer struct {
 }
 
 func GetHTTPServer() *httpServer {
-	once.Do(func() {
+	httpServerOnce.Do(func() {
 		if httpServerIns == nil {
 			httpServerIns = &httpServer{}
 		}
@@ -25,6 +27,7 @@ func (h httpServer) Run() error {
 	app := fiber.New()
 
 	app.Use(panicInterceptor)
+	app.Use(errorInterceptor)
 
 	app.Get("/swagger/doc.json", swaggerJSONDoc)
 	app.Get("/swagger/*", fiberSwagger.WrapHandler)
