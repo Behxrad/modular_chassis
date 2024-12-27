@@ -6,12 +6,14 @@ import (
 )
 
 type UserResponse struct {
+	services.BaseReq
 	Username string `json:"username" binding:"required"`
 	Email    string `json:"email" binding:"required,email"`
 	Age      int    `json:"age" binding:"gte=18"`
 }
 
 type UserRequest struct {
+	services.BaseResp
 	ID int `json:"id" binding:"required,min=5,max=20"`
 }
 
