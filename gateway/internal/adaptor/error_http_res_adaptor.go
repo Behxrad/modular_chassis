@@ -3,6 +3,7 @@ package adaptor
 import (
 	"modular_chassis/echo/pkg/errs"
 	"modular_chassis/echo/pkg/services"
+	"modular_chassis/echo/pkg/utils/utils"
 	"sync"
 )
 
@@ -24,10 +25,6 @@ func GetErrHTTPAdaptor() *errHTTPAdaptor {
 }
 
 func (errHTTPAdaptor) MakeErroneousResponse(err error) (services.BaseResp, int) {
-	code, message := errs.GetErrorHandler().ConvertErrToBaseResponse(err)
-	response := services.BaseResp{
-		Code:    code,
-		Message: message,
-	}
+	response := utils.ConvertErrToBaseResponse(err)
 	return response, GetCodeAdaptor().convertCodeToHttpStatus(errs.ResponseCode(response.Code))
 }

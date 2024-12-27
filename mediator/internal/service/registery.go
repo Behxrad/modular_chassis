@@ -6,7 +6,7 @@ import (
 	goparser "go/parser"
 	"go/token"
 	"modular_chassis/echo/pkg"
-	"modular_chassis/echo/pkg/utils/string_utils"
+	"modular_chassis/echo/pkg/utils/utils"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -76,7 +76,7 @@ func (r *registry) RegisterService(serviceImpl interface{}) {
 	afterMethodNameCompile := regexp.MustCompile("\\(.*\\)")
 	for signature, value := range implMethods {
 		d := strings.Split(interfaceName, ".")[0]
-		m := string_utils.ToSnakeCase(string(afterMethodNameCompile.ReplaceAll([]byte(signature), []byte{})))
+		m := utils.ToSnakeCase(string(afterMethodNameCompile.ReplaceAll([]byte(signature), []byte{})))
 		r.serviceMethods[fmt.Sprintf("%s.%s", d, m)] = value
 	}
 }

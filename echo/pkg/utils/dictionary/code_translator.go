@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"modular_chassis/echo/pkg"
+	"modular_chassis/echo/pkg/errs"
 	"path/filepath"
 	"sync"
 )
@@ -75,7 +76,7 @@ func (c *codeTranslator) Get(lang Language, key int) string {
 	if val, ok := c.messages[k]; ok {
 		return val
 	}
-	return ""
+	return c.Get(lang, int(c.GetDefaultCodeMessage(errs.ResponseCode(key))))
 }
 
 func (c *codeTranslator) ParseEmbeddedFiles(dirName string) {
@@ -98,4 +99,18 @@ func (c *codeTranslator) ParseEmbeddedFiles(dirName string) {
 		}
 	}
 	return
+}
+
+func (c *codeTranslator) GetDefaultCodeMessage(code errs.ResponseCode) errs.ResponseCode {
+	switch {
+	case code >= errs.GeneralError && code < errs.InternalError:
+		return errs.GeneralError
+	case code >= errs.InternalError && code < errs.UnknownError:
+		return errs.InternalError
+	case code >= errs.UnknownError && code < errs.BadRequest:
+		return errs.UnknownError
+	case code >= errs.BadRequest:
+		return errs.BadRequest
+	}
+	return errs.InternalError
 }

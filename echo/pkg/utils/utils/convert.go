@@ -1,4 +1,4 @@
-package string_utils
+package utils
 
 import "unicode"
 
