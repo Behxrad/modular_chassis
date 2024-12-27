@@ -22,7 +22,7 @@ var generalAPI = func(c *fiber.Ctx) error {
 	domain := c.Params("domain")
 	service := c.Params("service")
 
-	res, err := api.GetMediatorAPI().Route(c.Context(), domain, service, string(c.Body()))
+	res, err := api.GetMediatorAPI().JSONRoute(c.Context(), domain, service, string(c.Body()))
 	if err != nil {
 		return err
 	}

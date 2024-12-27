@@ -10,18 +10,21 @@ import (
 	"strings"
 )
 
-func (parser *Parser) ParseEmbeddedFiles(embedded embed.FS, dirName string, mainAPIFile string) error {
+func (parser *Parser) ParseEmbeddedFiles(embedded embed.FS, dirName string, mainAPIFile string, targetedFilesName string) error {
 	dir, err := embedded.ReadDir(dirName)
 	if err != nil {
 		return err
 	}
 	for _, file := range dir {
 		if file.IsDir() {
-			err := parser.ParseEmbeddedFiles(embedded, filepath.Join(dirName, file.Name()), mainAPIFile)
+			err := parser.ParseEmbeddedFiles(embedded, filepath.Join(dirName, file.Name()), mainAPIFile, targetedFilesName)
 			if err != nil {
 				return err
 			}
 		} else {
+			if file.Name() != targetedFilesName && file.Name() != mainAPIFile {
+				continue
+			}
 			data, err := embedded.ReadFile(filepath.Join(dirName, file.Name()))
 			if err != nil {
 				return err
@@ -43,9 +46,9 @@ func (parser *Parser) ParseEmbeddedFiles(embedded embed.FS, dirName string, main
 }
 
 // ParseAPIMultiSearchDirV2 is like ParseAPI but for multiple search dirs.
-func (parser *Parser) ParseAPIMultiSearchDirV2(embedded embed.FS, embedRoots []string, mainAPIFile string) error {
+func (parser *Parser) ParseAPIMultiSearchDirV2(embedded embed.FS, embedRoots []string, mainAPIFile string, targetedFileName string) error {
 	for _, er := range embedRoots {
-		err := parser.ParseEmbeddedFiles(embedded, er, mainAPIFile)
+		err := parser.ParseEmbeddedFiles(embedded, er, mainAPIFile, targetedFileName)
 		if err != nil {
 			return err
 		}
@@ -90,10 +93,6 @@ func (parser *Parser) ParseGeneralAPIInfoV2(data []byte, mainAPIFile string) err
 
 func (parser *Parser) ParseRouterAPIInfoV2(fileInfo *AstFileInfo) error {
 	if (fileInfo.ParseFlag & ParseOperations) == ParseNone {
-		return nil
-	}
-
-	if filePath := strings.Split(fileInfo.Path, "/"); filePath[len(filePath)-1] != "definition.go" {
 		return nil
 	}
 

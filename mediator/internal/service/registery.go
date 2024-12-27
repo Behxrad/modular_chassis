@@ -24,9 +24,9 @@ var (
 )
 
 type methodInfo struct {
-	function reflect.Value
-	request  reflect.Type
-	response reflect.Type
+	Function reflect.Value
+	Request  reflect.Type
+	Response reflect.Type
 }
 
 type registry struct {
@@ -59,6 +59,11 @@ func GetRegistry() *registry {
 
 func (r *registry) GetService(domain, method string) methodInfo {
 	return r.serviceMethods[fmt.Sprintf("%s.%s", domain, method)]
+}
+
+func (r *registry) GetServiceModels(domain, method string) (request, response reflect.Type) {
+	mInfo := r.serviceMethods[fmt.Sprintf("%s.%s", domain, method)]
+	return mInfo.Request, mInfo.Response
 }
 
 func (r *registry) RegisterService(serviceImpl interface{}) {
@@ -129,9 +134,9 @@ func (r *registry) extractImplFuncDefs(serviceImpl interface{}) map[string]metho
 		}
 		funcDefs[fmt.Sprintf("%s(%s)(%s)", method.Name, strings.Join(params, ","),
 			strings.Join(results, ","))] = methodInfo{
-			function: v.Method(i),
-			request:  t.Method(i).Func.Type().In(2),
-			response: t.Method(i).Func.Type().Out(0),
+			Function: v.Method(i),
+			Request:  t.Method(i).Func.Type().In(2),
+			Response: t.Method(i).Func.Type().Out(0),
 		}
 	}
 	return funcDefs

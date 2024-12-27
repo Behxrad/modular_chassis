@@ -7,8 +7,13 @@ import (
 	"strings"
 )
 
+var jsonResult string
+
 func GenerateSwagger() (string, error) {
-	return gen.New().BuildJson(&gen.Config{
+	if jsonResult != "" {
+		return jsonResult, nil
+	}
+	json, err := gen.New().BuildJson(&gen.Config{
 		SearchDir:           "services",
 		Excludes:            "",
 		ParseExtension:      "",
@@ -37,4 +42,9 @@ func GenerateSwagger() (string, error) {
 		State:               "",
 		ParseFuncBody:       false,
 	})
+	if err != nil {
+		return "", err
+	}
+	jsonResult = json
+	return jsonResult, nil
 }

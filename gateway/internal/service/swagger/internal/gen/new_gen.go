@@ -69,7 +69,7 @@ func (g *Gen) BuildJson(config *Config) (string, error) {
 	p.HostState = config.State
 	p.ParseFuncBody = config.ParseFuncBody
 
-	if err := p.ParseAPIMultiSearchDirV2(pkg.EmbeddedFiles, searchDirs, config.MainAPIFile); err != nil {
+	if err := p.ParseAPIMultiSearchDirV2(pkg.EmbeddedFiles, searchDirs, config.MainAPIFile, "definition.go"); err != nil {
 		return "", err
 	}
 
