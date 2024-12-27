@@ -5,7 +5,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"modular_chassis/gateway/internal/service/swagger"
 	"modular_chassis/mediator/pkg/api"
-	"reflect"
 )
 
 var swaggerJSONDoc = func(c *fiber.Ctx) error {
@@ -24,9 +23,13 @@ var generalAPI = func(c *fiber.Ctx) error {
 	domain := c.Params("domain")
 	service := c.Params("service")
 
-	reqModel, _ := api.GetMediatorAPI().GetServiceModels(domain, service)
+	request := api.GetMediatorAPI().GetServiceRequestModel(domain, service)
+	baseReq := api.GetMediatorAPI().GetBaseReqFromModel(request)
+	if baseReq != nil {
+		//Can change baseReq here
+		baseReq.Mobile = "Mobile Number here"
+	}
 
-	request := reflect.New(reqModel).Interface()
 	err := json.Unmarshal(c.Body(), request)
 	if err != nil {
 		return err

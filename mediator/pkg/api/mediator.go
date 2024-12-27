@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"modular_chassis/echo/pkg/services"
 	"modular_chassis/mediator/internal/service"
 	"reflect"
 	"sync"
@@ -32,10 +33,19 @@ func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, req
 	return response, nil
 }
 
-func (m *mediatorAPI) GetServiceModels(serviceType, method string) (request, response reflect.Type) {
-	return service.GetRegistry().GetServiceModels(serviceType, method)
+func (m *mediatorAPI) GetServiceRequestModel(serviceType, method string) any {
+	requestModel, _ := service.GetRegistry().GetServiceModels(serviceType, method)
+	return reflect.New(requestModel).Interface()
 }
 
 func (m *mediatorAPI) RegisterServiceFunc(serviceImpl interface{}) {
 	service.GetRegistry().RegisterService(serviceImpl)
+}
+
+func (m *mediatorAPI) GetBaseReqFromModel(request any) *services.BaseReq {
+	if reflect.ValueOf(request).Elem().FieldByName("BaseReq").IsValid() {
+		v := reflect.ValueOf(request).Elem().FieldByName("BaseReq").Addr().Interface().(*services.BaseReq)
+		return v
+	}
+	return nil
 }

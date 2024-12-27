@@ -1,9 +1,9 @@
 package services
 
 type BaseReq struct {
-	mobile string
+	Mobile string
 }
 
 type BaseResp struct {
-	code int64
+	Code int64
 }
