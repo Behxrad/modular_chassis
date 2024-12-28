@@ -139,7 +139,7 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 	result := "// @Success 200 {object} %s.%s"
 	router := "// @Router /api/%s/%s [POST]"
 
-	if len(decl.Params.List) > 1 {
+	if len(decl.Params.List) == 2 {
 		t := decl.Params.List[1].Type.(*ast.Ident).Name
 		for i, field := range decl.Params.List[1].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).Fields.List {
 			if field.Names == nil {
@@ -148,9 +148,12 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 			}
 		}
 		param = fmt.Sprintf(param, t, packageName, t)
+	} else {
+		PrintError(packageName, method)
+		return nil
 	}
 
-	if len(decl.Results.List) != 0 {
+	if len(decl.Results.List) == 2 {
 		t := decl.Results.List[0].Type.(*ast.Ident).Name
 		for i, field := range decl.Results.List[0].Type.(*ast.Ident).Obj.Decl.(*ast.TypeSpec).Type.(*ast.StructType).Fields.List {
 			if field.Names == nil {
@@ -159,9 +162,17 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 			}
 		}
 		result = fmt.Sprintf(result, packageName, t)
+	} else {
+		PrintError(packageName, method)
+		return nil
 	}
 
 	router = fmt.Sprintf(router, packageName, method)
 
 	return &ast.CommentGroup{List: []*ast.Comment{{Text: param}, {Text: result}, {Text: router}}}
+}
+
+func PrintError(packageName string, method string) {
+	fmt.Printf("Func %s.%s does not follow below pattern to be exposed:\n"+
+		"Func(Context,{Request})({Response},error)", packageName, method)
 }

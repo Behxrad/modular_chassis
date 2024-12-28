@@ -7,4 +7,6 @@ var (
 	InternalError errs.ResponseCode = 20000
 	UnknownError  errs.ResponseCode = 30000
 	BadRequest    errs.ResponseCode = 40000
+
+	ServiceNotFound errs.ResponseCode = 20001
 )

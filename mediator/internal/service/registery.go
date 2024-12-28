@@ -6,6 +6,8 @@ import (
 	goparser "go/parser"
 	"go/token"
 	"modular_chassis/echo/pkg"
+	"modular_chassis/echo/pkg/errs"
+	"modular_chassis/echo/pkg/services"
 	"modular_chassis/echo/pkg/utils/utils"
 	"path/filepath"
 	"reflect"
@@ -61,9 +63,12 @@ func (r *registry) GetService(domain, method string) methodInfo {
 	return r.serviceMethods[fmt.Sprintf("%s.%s", domain, method)]
 }
 
-func (r *registry) GetServiceModels(domain, method string) (request, response reflect.Type) {
-	mInfo := r.serviceMethods[fmt.Sprintf("%s.%s", domain, method)]
-	return mInfo.Request, mInfo.Response
+func (r *registry) GetServiceRequestModel(domain, method string) (reflect.Type, error) {
+	mInfo := r.GetService(domain, method)
+	if !mInfo.Function.IsValid() {
+		return nil, errs.NewServiceErrorCode(services.ServiceNotFound)
+	}
+	return mInfo.Request, nil
 }
 
 func (r *registry) RegisterService(serviceImpl interface{}) {

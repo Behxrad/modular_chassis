@@ -33,9 +33,12 @@ func (m *mediatorAPI) Route(ctx context.Context, serviceType, method string, req
 	return response, nil
 }
 
-func (m *mediatorAPI) GetServiceRequestModel(serviceType, method string) any {
-	requestModel, _ := service.GetRegistry().GetServiceModels(serviceType, method)
-	return reflect.New(requestModel).Interface()
+func (m *mediatorAPI) GetServiceRequestModel(serviceType, method string) (any, error) {
+	requestModel, err := service.GetRegistry().GetServiceRequestModel(serviceType, method)
+	if err != nil {
+		return nil, err
+	}
+	return reflect.New(requestModel).Interface(), nil
 }
 
 func (m *mediatorAPI) RegisterServiceFunc(serviceImpl interface{}) {
