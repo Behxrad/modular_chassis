@@ -9,6 +9,8 @@ import (
 )
 
 func (g *Gen) BuildJson(config *Config) (string, error) {
+	fmt.Println("Swagger generator definitions check ...")
+
 	if config.Debugger != nil {
 		g.debug = config.Debugger
 	}

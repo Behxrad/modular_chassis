@@ -39,6 +39,7 @@ type registry struct {
 }
 
 func init() {
+	fmt.Println("Registry definitions check ...")
 	err := GetRegistry().identifyServiceDefinitions(servicesDefinitionRoot)
 	if err != nil {
 		return
@@ -191,11 +192,18 @@ func (r *registry) identifyServiceInterfaces(file *ast.File) {
 
 							var param, result string
 
-							if len(decl.Params.List) > 1 {
+							defer func() {
+								if err := recover(); err != nil {
+									fmt.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
+										"Func(Context,{Request})({Response},error)\033[0m\n", packageName, methodName)
+								}
+							}()
+
+							if len(decl.Params.List) == 2 {
 								param = decl.Params.List[1].Type.(*ast.Ident).Name
 							}
 
-							if len(decl.Results.List) != 0 {
+							if len(decl.Results.List) == 2 {
 								result = decl.Results.List[0].Type.(*ast.Ident).Name
 							}
 
