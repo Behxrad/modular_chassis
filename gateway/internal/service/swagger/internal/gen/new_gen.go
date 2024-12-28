@@ -79,5 +79,7 @@ func (g *Gen) BuildJson(config *Config) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	fmt.Println("Done")
 	return string(b), nil
 }

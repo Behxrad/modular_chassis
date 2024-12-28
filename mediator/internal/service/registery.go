@@ -41,6 +41,7 @@ type registry struct {
 func init() {
 	fmt.Println("Registry definitions check ...")
 	err := GetRegistry().identifyServiceDefinitions(servicesDefinitionRoot)
+	fmt.Println("Done")
 	if err != nil {
 		return
 	}
