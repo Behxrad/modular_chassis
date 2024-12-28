@@ -173,6 +173,6 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 }
 
 func PrintError(packageName string, method string) {
-	fmt.Printf("Func %s.%s does not follow below pattern to be exposed:\n"+
-		"Func(Context,{Request})({Response},error)", packageName, method)
+	fmt.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
+		"Func(Context,{Request})({Response},error)\033[0m\n", packageName, method)
 }
