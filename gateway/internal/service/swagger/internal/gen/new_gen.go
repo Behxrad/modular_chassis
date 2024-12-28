@@ -2,6 +2,7 @@ package gen
 
 import (
 	"fmt"
+	"log"
 	"modular_chassis/echo/pkg"
 	swag "modular_chassis/gateway/internal/service/swagger/internal"
 	"os"
@@ -9,7 +10,7 @@ import (
 )
 
 func (g *Gen) BuildJson(config *Config) (string, error) {
-	fmt.Println("Swagger generator definitions check ...")
+	log.Println("Swagger generator definitions check ...")
 
 	if config.Debugger != nil {
 		g.debug = config.Debugger
@@ -80,6 +81,6 @@ func (g *Gen) BuildJson(config *Config) (string, error) {
 		return "", err
 	}
 
-	fmt.Println("Done")
+	log.Println("Done")
 	return string(b), nil
 }

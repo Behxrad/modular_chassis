@@ -6,6 +6,7 @@ import (
 	"go/ast"
 	goparser "go/parser"
 	"go/token"
+	"log"
 	"path/filepath"
 	"strings"
 )
@@ -179,6 +180,6 @@ func (parser *Parser) CreateCommentsBasedOnFuncDecl(name string, decl *ast.FuncT
 }
 
 func PrintError(packageName string, methodName string) {
-	fmt.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
+	log.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
 		"Func(Context,{Request})({Response},error)\033[0m\n", packageName, methodName)
 }

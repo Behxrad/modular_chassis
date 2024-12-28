@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	goparser "go/parser"
 	"go/token"
+	"log"
 	"modular_chassis/echo/pkg"
 	"modular_chassis/echo/pkg/errs"
 	"modular_chassis/echo/pkg/services"
@@ -39,9 +40,9 @@ type registry struct {
 }
 
 func init() {
-	fmt.Println("Registry definitions check ...")
+	log.Println("Registry definitions check ...")
 	err := GetRegistry().identifyServiceDefinitions(servicesDefinitionRoot)
-	fmt.Println("Done")
+	log.Println("Done")
 	if err != nil {
 		return
 	}
@@ -195,7 +196,7 @@ func (r *registry) identifyServiceInterfaces(file *ast.File) {
 
 							defer func() {
 								if err := recover(); err != nil {
-									fmt.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
+									log.Printf("\033[33mFunc %s.%s does not follow below pattern to be exposed:\n"+
 										"Func(Context,{Request})({Response},error)\033[0m\n", packageName, methodName)
 								}
 							}()

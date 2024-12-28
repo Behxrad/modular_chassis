@@ -9,10 +9,19 @@ import (
 
 var jsonResult string
 
-func GenerateSwagger() (string, error) {
+func GenerateSwagger() (res string, err error) {
 	if jsonResult != "" {
 		return jsonResult, nil
 	}
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("Swagger generation panic:\n", r)
+			res = "{\n    \"swagger\": \"2.0\",\n    \"info\": {\n        \"contact\": {}\n    },\n    \"description\":" +
+				" \"Swagger Generation ERROR\"\n}"
+			err = nil
+		}
+	}()
+
 	json, err := gen.New().BuildJson(&gen.Config{
 		SearchDir:           "services",
 		Excludes:            "",

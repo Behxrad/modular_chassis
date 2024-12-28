@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/go-playground/validator/v10"
+	"log"
 	"modular_chassis/echo/pkg/errs"
 	"reflect"
 )
@@ -47,7 +47,7 @@ func (r *router) validateRequest(request any) error {
 	err := validate.Struct(request)
 	if err != nil {
 		validationErrors := err.(validator.ValidationErrors)
-		fmt.Println(validationErrors)
+		log.Println(validationErrors)
 		return err
 	}
 	return nil
